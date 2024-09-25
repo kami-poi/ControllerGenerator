@@ -227,7 +227,6 @@ namespace ControllerGenerator.SourceGenerators
             {
                 var methodName = methodSymbol.Name;
 
-
                 var returnType = methodSymbol.ReturnType.ToString().ToLower();
 
                 var parameters = methodSymbol.Parameters;
@@ -284,6 +283,45 @@ namespace ControllerGenerator.SourceGenerators
                         if (argumentExpression != null)
                         {
                             arguments.Add(SyntaxFactory.AttributeArgument(argumentExpression));
+                        }
+                    }
+                    
+                    foreach (var nameArgumentPair in attributeData.NamedArguments)
+                    {
+                        ExpressionSyntax argumentExpression = null;
+                        switch (nameArgumentPair.Value.Value)
+                        {
+                            case int intValue:
+                                argumentExpression = SyntaxFactory.LiteralExpression(SyntaxKind.NumericLiteralExpression, SyntaxFactory.Literal(intValue));
+                                break;
+                            case string stringValue:
+                                argumentExpression = SyntaxFactory.LiteralExpression(SyntaxKind.StringLiteralExpression, SyntaxFactory.Literal(stringValue));
+                                break;
+                            case bool boolValue:
+                                argumentExpression = SyntaxFactory.LiteralExpression(boolValue ? SyntaxKind.TrueLiteralExpression : SyntaxKind.FalseLiteralExpression);
+                                break;
+                            case double doubleValue:
+                                argumentExpression = SyntaxFactory.LiteralExpression(SyntaxKind.NumericLiteralExpression, SyntaxFactory.Literal(doubleValue));
+                                break;
+                            case float floatValue:
+                                argumentExpression = SyntaxFactory.LiteralExpression(SyntaxKind.NumericLiteralExpression, SyntaxFactory.Literal(floatValue));
+                                break;
+                            case decimal decimalValue:
+                                argumentExpression = SyntaxFactory.LiteralExpression(SyntaxKind.NumericLiteralExpression, SyntaxFactory.Literal(decimalValue));
+                                break;
+                            case DateTime dateTimeValue:
+                                argumentExpression = SyntaxFactory.LiteralExpression(SyntaxKind.StringLiteralExpression, SyntaxFactory.Literal(dateTimeValue.ToString("o")));
+                                break;
+                            case TimeSpan timeSpanValue:
+                                argumentExpression = SyntaxFactory.LiteralExpression(SyntaxKind.StringLiteralExpression, SyntaxFactory.Literal(timeSpanValue.ToString()));
+                                break;
+                            default:
+                                //argumentExpression = SyntaxFactory.LiteralExpression(SyntaxKind.NullLiteralExpression);
+                                break;
+                        }
+                        if (argumentExpression != null)
+                        {
+                            arguments.Add(SyntaxFactory.AttributeArgument(SyntaxFactory.NameEquals(nameArgumentPair.Key),null,argumentExpression));
                         }
                     }
 
